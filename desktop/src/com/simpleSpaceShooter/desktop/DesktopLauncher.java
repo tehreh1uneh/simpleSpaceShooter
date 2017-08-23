@@ -2,11 +2,11 @@ package com.simpleSpaceShooter.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.simpleSpaceShooter.SimpleSpaceShooter;
+import com.simpleSpaceShooter.StarGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new SimpleSpaceShooter(), config);
+		new LwjglApplication(new StarGame(), config);
 	}
 }

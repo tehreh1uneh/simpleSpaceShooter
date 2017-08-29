@@ -3,14 +3,24 @@ package com.simpleSpaceShooter.screens.menu;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.simpleSpaceShooter.engine.Base2DScreen;
+import com.simpleSpaceShooter.engine.Sprite2DTexture;
+import com.simpleSpaceShooter.math.Rect;
+import com.simpleSpaceShooter.math.Rnd;
+import com.simpleSpaceShooter.stars.Star;
 
 public class MenuScreen extends Base2DScreen {
 
-    private SpriteBatch batch;
-    private Texture background;
+    private float starWidth;
+    private static final int STARS_AMOUNT = 250;
+
+    private Sprite2DTexture textureBackground;
+    private TextureAtlas atlas;
+    private Background background;
+    private Star[] stars = new Star[STARS_AMOUNT];
 
     public MenuScreen(Game game) {
         super(game);
@@ -19,60 +29,68 @@ public class MenuScreen extends Base2DScreen {
     @Override
     public void show() {
         super.show();
-        batch = new SpriteBatch();
-        background = new Texture("galaxy.jpg");
+        textureBackground = new Sprite2DTexture("textures/bg.png");
+        atlas = new TextureAtlas("textures/mainAtlas.pack");
+        background = new Background(new TextureRegion(textureBackground));
+        TextureRegion regionStar = atlas.findRegion("star");
+
+        for (int i = 0; i < STARS_AMOUNT; i++) {
+
+            starWidth = Rnd.nextFloat(0.005f, 0.012f);
+            float vx = Rnd.nextFloat(-0.005f, 0.005f);
+            float vy = Rnd.nextFloat(-0.05f, -0.1f);
+            float starWidth = this.starWidth * Rnd.nextFloat(0.75f, 1f);
+            stars[i] = new Star(regionStar, vx, vy, starWidth);
+        }
     }
 
     @Override
-    public void render(float delta) {
+    protected void resize(Rect worldBounds) {
+        background.resize(worldBounds);
+
+        for (int i = 0; i < STARS_AMOUNT; i++) {
+            stars[i].resize(worldBounds);
+        }
+    }
+
+    @Override
+    protected void touchDown(Vector2 touch, int pointer) {
+
+        for (int i = 0; i < STARS_AMOUNT; i++) {
+            stars[i].touchDown(touch, pointer);
+        }
+    }
+
+    @Override
+    public void render (float delta) {
+        update(delta);
+        draw();
+    }
+
+    private void update(float deltaTime) {
+
+        for (int i = 0; i < STARS_AMOUNT; i++) {
+            stars[i].update(deltaTime);
+        }
+    }
+
+    private void draw() {
         Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(background, 0, 0);
+        background.draw(batch);
+
+        for (int i = 0; i < STARS_AMOUNT; i++) {
+            stars[i].draw(batch);
+        }
+
         batch.end();
     }
 
     @Override
-    public void dispose() {
-        batch.dispose();
-        background.dispose();
-
+    public void dispose () {
+        textureBackground.dispose();
+        atlas.dispose();
         super.dispose();
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        System.out.println("key down " + keycode);
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        System.out.println("keyup " + keycode);
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        System.out.println("keytyped " + character);
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchdown x " + screenX + " y " + screenY + " pointer " + pointer + " button " + button);
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchup x " + screenX + " y " + screenY + " pointer " + pointer + " button " + button);
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        System.out.println("touchdragged x " + screenX + " y " + screenY + " pointer " + pointer);
-        return false;
     }
 }

@@ -1,4 +1,4 @@
-package com.simpleSpaceShooter.screens.menu;
+package com.simpleSpaceShooter.screens.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -6,30 +6,25 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.simpleSpaceShooter.Background;
 import com.simpleSpaceShooter.engine.Base2DScreen;
 import com.simpleSpaceShooter.engine.Sprite2DTexture;
-import com.simpleSpaceShooter.gui.ActionListener;
 import com.simpleSpaceShooter.math.Rect;
 import com.simpleSpaceShooter.math.Rnd;
-import com.simpleSpaceShooter.screens.game.GameScreen;
 import com.simpleSpaceShooter.stars.Star;
 
-public class MenuScreen extends Base2DScreen implements ActionListener {
+public class GameScreen extends Base2DScreen {
 
     private static final int STARS_AMOUNT = 250;
-    private static final float BUTTON_HEIGHT = 0.15f;
-    private static final float BUTTON_PRESS_SCALE = 0.9f;
-
+    private static final float STAR_HEIGHT = 0.01f;
 
     private Sprite2DTexture textureBackground;
     private TextureAtlas atlas;
-    private com.simpleSpaceShooter.Background background;
+    private Background background;
+    private MainShip mainShip;
     private Star[] stars = new Star[STARS_AMOUNT];
-    private static final float STAR_HEIGHT = 0.01f;
-    private ButtonExit buttonExit;
-    private ButtonNewGame buttonNewGame;
 
-    public MenuScreen(Game game) {
+    public GameScreen(Game game) {
         super(game);
     }
 
@@ -37,10 +32,12 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     public void show() {
         super.show();
         textureBackground = new Sprite2DTexture("textures/bg.png");
-        atlas = new TextureAtlas("textures/menuAtlas.tpack");
-        background = new com.simpleSpaceShooter.Background(new TextureRegion(textureBackground));
-        TextureRegion regionStar = atlas.findRegion("star");
+        atlas = new TextureAtlas("textures/mainAtlas.tpack");
 
+        background = new Background(new TextureRegion(textureBackground));
+        mainShip = new MainShip(atlas);
+
+        TextureRegion regionStar = atlas.findRegion("star");
         for (int i = 0; i < STARS_AMOUNT; i++) {
             float vx = Rnd.nextFloat(-0.005f, 0.005f);
             float vy = Rnd.nextFloat(-0.05f, -0.1f);
@@ -48,53 +45,57 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
             stars[i] = new Star(regionStar, vx, vy, starHeight);
         }
 
-        buttonNewGame = new ButtonNewGame(atlas, this, BUTTON_PRESS_SCALE);
-        buttonNewGame.setHeightProportion(BUTTON_HEIGHT);
-
-        buttonExit = new ButtonExit(atlas, this, BUTTON_PRESS_SCALE);
-        buttonExit.setHeightProportion(BUTTON_HEIGHT);
     }
 
     @Override
     protected void resize(Rect worldBounds) {
         background.resize(worldBounds);
+        mainShip.resize(worldBounds);
 
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].resize(worldBounds);
-        buttonExit.resize(worldBounds);
-        buttonNewGame.resize(worldBounds);
     }
 
     @Override
     protected void touchDown(Vector2 touch, int pointer) {
-        buttonExit.touchDown(touch, pointer);
-        buttonNewGame.touchDown(touch, pointer);
+        mainShip.touchDown(touch, pointer);
     }
 
     @Override
     protected void touchUp(Vector2 touch, int pointer) {
-        buttonExit.touchUp(touch, pointer);
-        buttonNewGame.touchUp(touch, pointer);
+        mainShip.touchUp(touch, pointer);
     }
 
     @Override
-    public void actionPerformed(Object src) {
-        if (src == buttonExit) {
-            Gdx.app.exit();
-        } else if (src == buttonNewGame) {
-            game.setScreen(new GameScreen(game));
-        } else {
-            throw new RuntimeException("Unknown src = " + src);
-        }
+    public boolean keyDown(int keycode) {
+        mainShip.keyDown(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return false;
     }
 
     @Override
     public void render(float delta) {
         update(delta);
+        checkCollisions();
+        deleteAllDestroyed();
         draw();
     }
 
     private void update(float deltaTime) {
+        mainShip.update(deltaTime);
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].update(deltaTime);
+    }
+
+    private void checkCollisions() {
+
+    }
+
+    private void deleteAllDestroyed() {
+
     }
 
     private void draw() {
@@ -102,10 +103,8 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].draw(batch);
-        buttonNewGame.draw(batch);
-        buttonExit.draw(batch);
+        mainShip.draw(batch);
         batch.end();
     }
 
@@ -115,6 +114,4 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         atlas.dispose();
         super.dispose();
     }
-
-
 }

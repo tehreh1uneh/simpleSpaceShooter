@@ -1,4 +1,4 @@
-package com.simpleSpaceShooter.screens.menu;
+package com.simpleSpaceShooter;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.simpleSpaceShooter.math.Rect;

@@ -8,10 +8,11 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
+        //float aspectRatio = 480f / 854f;
         float aspectRatio = 3f / 4f;
 
-        config.width = 450;
-        config.height = (int) (config.width / aspectRatio);
+        config.height = 900;
+        config.width = (int) (config.height * aspectRatio);
 
         new LwjglApplication(new StarGame(), config);
     }

@@ -3,6 +3,7 @@ package com.simpleSpaceShooter.sprites;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.simpleSpaceShooter.Utils.Regions;
 import com.simpleSpaceShooter.math.Rect;
 
 public class Sprite extends Rect {
@@ -18,6 +19,10 @@ public class Sprite extends Rect {
         if (region == null) throw new RuntimeException("Create Sprite with null region");
         regions = new TextureRegion[1];
         regions[0] = region;
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        regions = Regions.split(region, rows, cols, frames);
     }
     //endregion
 

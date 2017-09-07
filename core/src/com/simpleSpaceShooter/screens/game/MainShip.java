@@ -4,26 +4,32 @@ package com.simpleSpaceShooter.screens.game;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.simpleSpaceShooter.Ship;
 import com.simpleSpaceShooter.math.Rect;
-import com.simpleSpaceShooter.sprites.Sprite;
+import com.simpleSpaceShooter.pools.BulletPool;
 
-class MainShip extends Sprite {
+class MainShip extends Ship {
 
     private static final float SHIP_HEIGHT = 0.15f;
     private static final float BOTTOM_MARGIN = 0.05f;
 
-    private Rect worldBounds;
     private final Vector2 v0 = new Vector2(0.5f, 0f);
     private final Vector2 v = new Vector2();
 
-    MainShip(TextureAtlas atlas) {
+    MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
         setHeightProportion(SHIP_HEIGHT);
+        this.bulletPool = bulletPool;
+        bulletRegion = atlas.findRegion("bulletMainShip");
+        bulletHeight = 0.01f;
+        reloadInterval = 0.15f;
+        bulletV.set(0f, 0.5f);
+        bulletDamage = 1;
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        this.worldBounds = worldBounds;
+        super.resize(worldBounds);
         setBottom(worldBounds.getBottom() + BOTTOM_MARGIN);
     }
 
@@ -114,12 +120,22 @@ class MainShip extends Sprite {
 
     @Override
     public void update(float deltaTime) {
-        if (getRight() > worldBounds.getRight()) {
+        pos.mulAdd(v, deltaTime);
+        reloadTimer += deltaTime;
+        if(reloadTimer >= reloadInterval) {
+            reloadTimer = 0f;
+            shoot();
+        }
+        if(getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
-        } else if (getLeft() < worldBounds.getLeft()) {
+            stop();
+        }
+        if(getLeft() < worldBounds.getLeft()) {
             setLeft(worldBounds.getLeft());
-        } else {
-            pos.mulAdd(v, deltaTime);
+            stop();
         }
     }
-}
+
+    Vector2 getV() {
+        return v;
+    }}

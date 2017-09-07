@@ -9,7 +9,7 @@ import com.simpleSpaceShooter.sprites.Sprite;
 
 public class Star extends Sprite {
 
-    private final Vector2 v = new Vector2();
+    final Vector2 v = new Vector2();
     private Rect worldBounds;
 
     public Star(TextureRegion region, float vx, float vy, float height) {

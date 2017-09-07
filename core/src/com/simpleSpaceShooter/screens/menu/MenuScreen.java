@@ -2,6 +2,7 @@ package com.simpleSpaceShooter.screens.menu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,6 +30,8 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     private ButtonExit buttonExit;
     private ButtonNewGame buttonNewGame;
 
+    private Music mainTrack;
+
     public MenuScreen(Game game) {
         super(game);
     }
@@ -40,6 +43,10 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
         background = new com.simpleSpaceShooter.Background(new TextureRegion(textureBackground));
         TextureRegion regionStar = atlas.findRegion("star");
+
+        mainTrack = Gdx.audio.newMusic(Gdx.files.internal("tracks/Trackman productions - Dirty south J a.mp3"));
+        mainTrack.play();
+
 
         for (int i = 0; i < STARS_AMOUNT; i++) {
             float vx = Rnd.nextFloat(-0.005f, 0.005f);
@@ -113,6 +120,7 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     public void dispose() {
         textureBackground.dispose();
         atlas.dispose();
+        mainTrack.dispose();
         super.dispose();
     }
 

@@ -12,9 +12,13 @@ public class Sprite extends Rect {
     protected float scale = 1f;
     protected TextureRegion[] regions;
     protected int frame;
+    private boolean isDestroyed;
 
 
     //region Constructors
+    public Sprite() {
+    }
+
     public Sprite(TextureRegion region){
         if (region == null) throw new RuntimeException("Create Sprite with null region");
         regions = new TextureRegion[1];
@@ -87,6 +91,18 @@ public class Sprite extends Rect {
     }
 
     //endregion
+
+    public void destroy() {
+        isDestroyed = true;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+    public void flushDestroy() {
+        isDestroyed = false;
+    }
 
     @Override
     public String toString() {

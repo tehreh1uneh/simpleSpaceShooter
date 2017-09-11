@@ -19,6 +19,7 @@ import com.simpleSpaceShooter.stars.TrackingStar;
 
 public class GameScreen extends Base2DScreen {
 
+    //region Fields
     private static final int STARS_AMOUNT = 250;
     private static final float STAR_HEIGHT = 0.01f;
 
@@ -31,11 +32,41 @@ public class GameScreen extends Base2DScreen {
     private MainShip mainShip;
     private TrackingStar[] stars = new TrackingStar[STARS_AMOUNT];
     private Sound sndExplosion;
+    //endregion
 
+    //region Constructors
     public GameScreen(Game game) {
         super(game);
     }
+    //endregion
 
+    //region UserActionEvents
+    @Override
+    protected void touchDown(Vector2 touch, int pointer) {
+        mainShip.touchDown(touch, pointer);
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(0.1f, touch);
+    }
+
+    @Override
+    protected void touchUp(Vector2 touch, int pointer) {
+        mainShip.touchUp(touch, pointer);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        mainShip.keyDown(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return false;
+    }
+    //endregion
+
+    //region ScreenLifeEvents
     @Override
     public void show() {
         super.show();
@@ -62,30 +93,6 @@ public class GameScreen extends Base2DScreen {
         background.resize(worldBounds);
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].resize(worldBounds);
         mainShip.resize(worldBounds);
-    }
-
-    @Override
-    protected void touchDown(Vector2 touch, int pointer) {
-        mainShip.touchDown(touch, pointer);
-        Explosion explosion = explosionPool.obtain();
-        explosion.set(0.1f, touch);
-    }
-
-    @Override
-    protected void touchUp(Vector2 touch, int pointer) {
-        mainShip.touchUp(touch, pointer);
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        mainShip.keyDown(keycode);
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        mainShip.keyUp(keycode);
-        return false;
     }
 
     @Override
@@ -133,4 +140,5 @@ public class GameScreen extends Base2DScreen {
         sndExplosion.dispose();
         super.dispose();
     }
+    //endregion
 }

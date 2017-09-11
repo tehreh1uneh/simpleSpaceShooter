@@ -10,11 +10,13 @@ import com.simpleSpaceShooter.pools.BulletPool;
 
 class MainShip extends Ship {
 
+    //region Fields
     private static final float SHIP_HEIGHT = 0.15f;
     private static final float BOTTOM_MARGIN = 0.05f;
 
     private final Vector2 v0 = new Vector2(0.5f, 0f);
     private final Vector2 v = new Vector2();
+    //endregion
 
     MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);

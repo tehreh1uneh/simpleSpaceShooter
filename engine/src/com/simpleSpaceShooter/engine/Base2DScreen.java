@@ -74,8 +74,6 @@ public class Base2DScreen implements Screen, InputProcessor {
 
         MatrixUtils.calcTransitionMatrix(matScreenToWorld, screenBounds, worldBounds);
         resize(worldBounds);
-
-        System.out.println("resize: width: " + width + " height: " + height);
     }
 
     protected void resize(Rect worldBounds) {
@@ -159,4 +157,5 @@ public class Base2DScreen implements Screen, InputProcessor {
         return false;
     }
     //endregion
+
 }

@@ -3,15 +3,18 @@ package com.simpleSpaceShooter.screens.menu;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.simpleSpaceShooter.Explosion;
 import com.simpleSpaceShooter.engine.Base2DScreen;
 import com.simpleSpaceShooter.engine.Sprite2DTexture;
 import com.simpleSpaceShooter.gui.ActionListener;
 import com.simpleSpaceShooter.math.Rect;
 import com.simpleSpaceShooter.math.Rnd;
+import com.simpleSpaceShooter.pools.ExplosionPool;
 import com.simpleSpaceShooter.screens.game.GameScreen;
 import com.simpleSpaceShooter.stars.Star;
 
@@ -30,7 +33,14 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     private ButtonExit buttonExit;
     private ButtonNewGame buttonNewGame;
 
+    private ExplosionPool explosionPool;
+    private Sound explosionSound;
+    private static final double EXPLOSION_INTERVAL = 3;
+    private double currentIntervalCounter = 0;
+    private Vector2 explosionPlace = new Vector2();
     private Music mainTrack;
+    private Rect worldBounds;
+    private TextureAtlas atlasGame;
 
     public MenuScreen(Game game) {
         super(game);
@@ -41,12 +51,17 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         super.show();
         textureBackground = new Sprite2DTexture("textures/bg.png");
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
+        atlasGame = new TextureAtlas("textures/mainAtlas.tpack");
+
         background = new com.simpleSpaceShooter.Background(new TextureRegion(textureBackground));
         TextureRegion regionStar = atlas.findRegion("star");
 
+        explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
+        explosionSound.setVolume(0, 0.2f);
+        explosionPool = new ExplosionPool(atlasGame, explosionSound);
         mainTrack = Gdx.audio.newMusic(Gdx.files.internal("tracks/Trackman productions - Dirty south J a.mp3"));
+        mainTrack.setVolume(0.5f);
         mainTrack.play();
-
 
         for (int i = 0; i < STARS_AMOUNT; i++) {
             float vx = Rnd.nextFloat(-0.005f, 0.005f);
@@ -64,6 +79,7 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
 
     @Override
     protected void resize(Rect worldBounds) {
+        this.worldBounds = worldBounds;
         background.resize(worldBounds);
 
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].resize(worldBounds);
@@ -102,6 +118,21 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
 
     private void update(float deltaTime) {
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].update(deltaTime);
+        currentIntervalCounter += deltaTime;
+        if (currentIntervalCounter >= EXPLOSION_INTERVAL) {
+            currentIntervalCounter = 0;
+
+            Explosion explosion = explosionPool.obtain();
+            explosionPlace.set  (   Rnd.nextFloat   (   worldBounds.getLeft() + 0.2f * worldBounds.getHalfWidth(),
+                                                        worldBounds.getRight() - 0.2f * worldBounds.getHalfWidth()
+                                                    ),
+                                    Rnd.nextFloat   (   worldBounds.getTop() - 0.2f * worldBounds.getHalfHeight(),
+                                                        worldBounds.getBottom() + 0.2f * worldBounds.getHalfHeight()
+                                                    )
+                                );
+            explosion.set(0.1f, explosionPlace);
+        }
+        explosionPool.updateActiveSprites(deltaTime);
     }
 
     private void draw() {
@@ -113,6 +144,8 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         for (int i = 0; i < STARS_AMOUNT; i++) stars[i].draw(batch);
         buttonNewGame.draw(batch);
         buttonExit.draw(batch);
+        explosionPool.freeAllDestroyedActiveObjects();
+        explosionPool.drawActiveObjects(batch);
         batch.end();
     }
 
@@ -120,6 +153,7 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     public void dispose() {
         textureBackground.dispose();
         atlas.dispose();
+        explosionPool.dispose();
         mainTrack.dispose();
         super.dispose();
     }

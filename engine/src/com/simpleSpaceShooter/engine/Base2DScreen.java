@@ -8,22 +8,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.simpleSpaceShooter.math.MatrixUtils;
-import com.simpleSpaceShooter.math.Rect;
+import com.simpleSpaceShooter.engine.math.MatrixUtils;
+import com.simpleSpaceShooter.engine.math.Rect;
 
+@SuppressWarnings({"WeakerAccess", "UnusedParameters"})
 public class Base2DScreen implements Screen, InputProcessor {
 
+    protected static final float WORLD_HEIGHT = 1f;
+
     protected final Game game;
-
-    private final float WORLD_HEIGHT = 1f;
-
-    private final Rect screenBounds = new Rect();
-    private final Rect worldBounds = new Rect();
-    private final Rect glBounds = new Rect(0f, 0f, 1f, 1f);
+    protected final Rect screenBounds = new Rect();
+    protected final Rect worldBounds = new Rect();
+    protected final Rect glBounds = new Rect(0f, 0f, 1f, 1f);
 
     protected final Matrix4 matWorldToGL = new Matrix4();
     protected final Matrix3 matScreenToWorld = new Matrix3();
-
     protected SpriteBatch batch;
 
     public Base2DScreen(Game game) {

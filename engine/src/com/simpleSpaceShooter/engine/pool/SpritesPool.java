@@ -15,21 +15,25 @@ public abstract class SpritesPool<T extends Sprite> {
 
     public T obtain() {
         T object;
-        if(freeObjects.isEmpty()) {
+        if (freeObjects.isEmpty())
             object = newObject();
-        } else {
-            object = freeObjects.remove(freeObjects.size() - 1);
-        }
+        else
+            object =  freeObjects.remove(freeObjects.size() - 1);
         activeObjects.add(object);
         debugLog();
         return object;
     }
 
     private void free(T object) {
-        if(!activeObjects.remove(object))
-            throw new RuntimeException("Попытка удаления несуществующего object = " + object);
+        if (!activeObjects.remove(object)) throw new RuntimeException("Попытка удаления несуществующего object = " + object);
         freeObjects.add(object);
         debugLog();
+    }
+
+    public void freeAllActiveObjects() {
+        final int cnt = activeObjects.size();
+        for (int i = 0; i < cnt; i++) freeObjects.add(activeObjects.get(i));
+        activeObjects.clear();
     }
 
     public void updateActiveSprites(float deltaTime) {

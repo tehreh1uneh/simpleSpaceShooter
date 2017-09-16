@@ -1,8 +1,11 @@
 package com.simpleSpaceShooter.engine.utils;
 
-/**
- * Created by tehreh1uneh on 15.09.2017.
- */
+import com.badlogic.gdx.utils.StringBuilder;
 
-public class StrBuilder {
+public class StrBuilder extends StringBuilder {
+
+    public StringBuilder clear() {
+        setLength(0);
+        return this;
+    }
 }

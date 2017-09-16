@@ -20,10 +20,10 @@ import com.simpleSpaceShooter.screens.menu_screen.ui.ButtonNewGame;
 
 public class MenuScreen extends Base2DScreen implements ActionListener {
 
+    //region Fields
     private static final int STARS_AMOUNT = 250;
     private static final float BUTTON_HEIGHT = 0.15f;
     private static final float BUTTON_PRESS_SCALE = 0.9f;
-
 
     private Sprite2DTexture textureBackground;
     private TextureAtlas atlas;
@@ -34,11 +34,38 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     private ButtonNewGame buttonNewGame;
 
     private Music music;
+    //endregion
 
     public MenuScreen(Game game) {
         super(game);
     }
 
+    //region UserActions
+    @Override
+    protected void touchDown(Vector2 touch, int pointer) {
+        buttonExit.touchDown(touch, pointer);
+        buttonNewGame.touchDown(touch, pointer);
+    }
+
+    @Override
+    protected void touchUp(Vector2 touch, int pointer) {
+        buttonExit.touchUp(touch, pointer);
+        buttonNewGame.touchUp(touch, pointer);
+    }
+
+    @Override
+    public void actionPerformed(Object src) {
+        if (src == buttonExit) {
+            Gdx.app.exit();
+        } else if (src == buttonNewGame) {
+            game.setScreen(new GameScreen(game));
+        } else {
+            throw new RuntimeException("Unknown src = " + src);
+        }
+    }
+    //endregion
+
+    //region Events
     @Override
     public void show() {
         super.show();
@@ -73,29 +100,6 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
     }
 
     @Override
-    protected void touchDown(Vector2 touch, int pointer) {
-        buttonExit.touchDown(touch, pointer);
-        buttonNewGame.touchDown(touch, pointer);
-    }
-
-    @Override
-    protected void touchUp(Vector2 touch, int pointer) {
-        buttonExit.touchUp(touch, pointer);
-        buttonNewGame.touchUp(touch, pointer);
-    }
-
-    @Override
-    public void actionPerformed(Object src) {
-        if (src == buttonExit) {
-            Gdx.app.exit();
-        } else if (src == buttonNewGame) {
-            game.setScreen(new GameScreen(game));
-        } else {
-            throw new RuntimeException("Unknown src = " + src);
-        }
-    }
-
-    @Override
     public void render(float delta) {
         update(delta);
         draw();
@@ -124,6 +128,5 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         music.dispose();
         super.dispose();
     }
-
-
+    //endregion
 }

@@ -12,28 +12,31 @@ import com.simpleSpaceShooter.common.bullets.BulletPool;
 
 public class MainShip extends Ship {
 
-    //region Fields
     private static final float SHIP_HEIGHT = 0.15f;
-    private static final float BOTTOM_MARGIN = 0.05f;
+    private static final float  BOTTOM_MARGIN = 0.05f;
 
     private final Vector2 v0 = new Vector2(0.5f, 0f);
-    private final Vector2 v = new Vector2();
-    //endregion
 
     MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound bulletSound) {
         super(atlas.findRegion("main_ship"), 1, 2, 2, bulletPool, explosionPool, worldBounds);
+        bulletRegion = atlas.findRegion("bulletMainShip");
         this.bulletSound = bulletSound;
         setHeightProportion(SHIP_HEIGHT);
-        bulletRegion = atlas.findRegion("bulletMainShip");
+        setToNewGame();
+    }
+
+    void setToNewGame() {
+        pos.x = worldBounds.pos.x;
         bulletHeight = 0.01f;
         reloadInterval = 0.15f;
         bulletV.set(0f, 0.5f);
         bulletDamage = 1;
+        hp = 100;
+        flushDestroy();
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        super.resize(worldBounds);
         setBottom(worldBounds.getBottom() + BOTTOM_MARGIN);
     }
 
@@ -43,12 +46,12 @@ public class MainShip extends Ship {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        if (touch.x < worldBounds.pos.x) {
-            if (leftPointer != INVALID_POINTER) return false;
+        if(touch.x < worldBounds.pos.x) {
+            if(leftPointer != INVALID_POINTER) return false;
             leftPointer = pointer;
             moveLeft();
         } else {
-            if (rightPointer != INVALID_POINTER) return false;
+            if(rightPointer != INVALID_POINTER) return false;
             rightPointer = pointer;
             moveRight();
         }
@@ -57,14 +60,12 @@ public class MainShip extends Ship {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        if (pointer == leftPointer) {
+        if(pointer == leftPointer) {
             leftPointer = INVALID_POINTER;
-            if (rightPointer != INVALID_POINTER) moveRight();
-            else stop();
-        } else if (pointer == rightPointer) {
+            if(rightPointer != INVALID_POINTER) moveRight(); else stop();
+        } else if(pointer == rightPointer) {
             rightPointer = INVALID_POINTER;
-            if (leftPointer != INVALID_POINTER) moveLeft();
-            else stop();
+            if(leftPointer != INVALID_POINTER) moveLeft(); else stop();
         }
         return false;
     }
@@ -85,7 +86,8 @@ public class MainShip extends Ship {
                 moveRight();
                 break;
             case Input.Keys.UP:
-                frame = 1;
+                //frame = 1;
+                //shoot();
                 break;
         }
     }
@@ -95,17 +97,15 @@ public class MainShip extends Ship {
             case Input.Keys.A:
             case Input.Keys.LEFT:
                 pressedLeft = false;
-                if (pressedRight) moveRight();
-                else stop();
+                if(pressedRight) moveRight(); else stop();
                 break;
             case Input.Keys.D:
             case Input.Keys.RIGHT:
                 pressedRight = false;
-                if (pressedLeft) moveLeft();
-                else stop();
+                if(pressedLeft) moveLeft(); else stop();
                 break;
             case Input.Keys.UP:
-                frame = 0;
+                //frame = 0;
                 break;
         }
     }
@@ -122,14 +122,23 @@ public class MainShip extends Ship {
         v.setZero();
     }
 
+    private final float hpRegenInterval = 1f;
+    private float hpRegenTimer;
+
     @Override
     public void update(float deltaTime) {
-        pos.mulAdd(v, deltaTime);
+        super.update(deltaTime);
         reloadTimer += deltaTime;
         if(reloadTimer >= reloadInterval) {
             reloadTimer = 0f;
             shoot();
         }
+        hpRegenTimer += deltaTime;
+        if(hpRegenTimer >= hpRegenInterval) {
+            hpRegenTimer = 0f;
+            if(hp < 100) hp++;
+        }
+
         if(getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
             stop();
@@ -140,6 +149,15 @@ public class MainShip extends Ship {
         }
     }
 
+    int getHP() {
+        return hp;
+    }
+
     Vector2 getV() {
         return v;
-    }}
+    }
+
+    boolean isBulletCollision (Rect bullet) {
+        return !(bullet.getRight() < getLeft() || bullet.getLeft() > getRight() || bullet.getBottom() > pos.y || bullet.getTop() < getBottom());
+    }
+}

@@ -1,8 +1,16 @@
 package com.simpleSpaceShooter.screens.game_screen.ui;
 
-/**
- * Created by tehreh1uneh on 15.09.2017.
- */
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.simpleSpaceShooter.engine.sprites.Sprite;
 
-public class MessageGameOver {
+public class MessageGameOver extends Sprite {
+
+    private final static float HEIGHT = 0.07f;
+    private final static float BOTTOM_MARGIN = 0.009f;
+
+    public MessageGameOver(TextureAtlas atlas) {
+        super(atlas.findRegion("message_game_over"));
+        setHeightProportion(HEIGHT);
+        setBottom(BOTTOM_MARGIN);
+    }
 }

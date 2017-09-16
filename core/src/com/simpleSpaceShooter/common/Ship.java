@@ -36,23 +36,23 @@ public class Ship extends Sprite {
         this.worldBounds = worldBounds;
     }
 
-//    private static final float DAMAGE_ANIMATION_INTERVAL = 0.1f;
-//    private float damageAnimationTimer = DAMAGE_ANIMATION_INTERVAL;
+    private static final float DAMAGE_ANIMATION_INTERVAL = 0.1f;
+    private float damageAnimationTimer = DAMAGE_ANIMATION_INTERVAL;
 
-//    public void damage(int damage) {
+    public void damage(int damage) {
 //        System.out.println("hp = " + hp + " damage = " + damage);
-//        frame = 1;
-//        damageAnimationTimer = 0f;
-//        hp -= damage;
-//        if(hp < 0) hp = 0;
-//        if(hp == 0) destroy();
-//    }
+        frame = 1;
+        damageAnimationTimer = 0f;
+        hp -= damage;
+        if(hp < 0) hp = 0;
+        if(hp == 0) destroy();
+    }
 
     @Override
     public void update(float deltaTime) {
         pos.mulAdd(v, deltaTime);
-//        damageAnimationTimer += deltaTime;
-//        if(damageAnimationTimer >= DAMAGE_ANIMATION_INTERVAL) frame = 0;
+        damageAnimationTimer += deltaTime;
+        if(damageAnimationTimer >= DAMAGE_ANIMATION_INTERVAL) frame = 0;
     }
 
     protected float bulletHeight;
@@ -65,7 +65,7 @@ public class Ship extends Sprite {
     protected void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, bulletV, bulletHeight, worldBounds, bulletDamage);
-        if(bulletSound.play(0.25f) == -1) throw new RuntimeException();
+        if(bulletSound.play() == -1) throw new RuntimeException();
     }
 
     public void boom() {
